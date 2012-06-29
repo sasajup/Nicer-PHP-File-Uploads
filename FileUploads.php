@@ -102,9 +102,7 @@ class File {
         }
         
         // Get file extension:
-        $this->file_extension = strtolower(
-            substr(strrchr($this->name, '.'), 1)
-        );
+        $this->file_extension = pathinfo($this->name, PATHINFO_EXTENSION);
 
         return $this;
     }
