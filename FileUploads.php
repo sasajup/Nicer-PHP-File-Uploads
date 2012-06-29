@@ -76,17 +76,31 @@ class File {
 
     /**
      * Create File object. Expects a sub-array from $_FILES.
-     * @param array $data Sub-array from $_FILES.
+     * @param string|array $data Sub-array from $_FILES, or form field name.
      * @return File Returns self.
      */
     public function __construct($data) {
-        // Extract variables from array:
-        $this->name      = $data['name'];
-        $this->mime_type = $data['type'];
-        $this->size      = $data['size'];
-        $this->tmp_name  = $data['tmp_name'];
-        $this->error     = $data['error'];
-
+        if (is_string($data)) {
+            // short cut..
+            if (isset($_FILES[$data])) {
+                return new self($_FILES[$data]);
+            }
+            else {
+                throw new Exception("File field not found");
+            }
+        }
+        elseif (is_array($data)) {
+            // Extract variables from array:
+            $this->name      = $data['name'];
+            $this->mime_type = $data['type'];
+            $this->size      = $data['size'];
+            $this->tmp_name  = $data['tmp_name'];
+            $this->error     = $data['error'];
+        }
+        else {
+            throw new Exception("Unexpected data passed to object constructor");
+        }
+        
         // Get file extension:
         $this->file_extension = strtolower(
             substr(strrchr($this->name, '.'), 1)
